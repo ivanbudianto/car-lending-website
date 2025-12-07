@@ -9,7 +9,7 @@ from flask_login import current_user
 import re
 
 # local imports
-from .models import User, Criteria, TourType, LocationPoint, SubCriteria
+from .models import User
 from .models import Car, CarTransmission, Division
 from . import bcrypt
 
@@ -124,11 +124,12 @@ class CarEditForm(FlaskForm):
   def validate_license_plate(self, license_plate):
     car = Car.query.filter(Car.license_plate==license_plate.data, Car.status != "Nonaktif").first()
 
-    cleaned_old_license_plate = re.sub(r"\s+", "", self.old_license_plate.data)
-    cleaned_license_plate = re.sub(r"\s+", "", car.license_plate)
+    if car:
+      cleaned_old_license_plate = re.sub(r"\s+", "", self.old_license_plate.data)
+      cleaned_license_plate = re.sub(r"\s+", "", car.license_plate)
 
-    if car and cleaned_license_plate != cleaned_old_license_plate:
-      raise ValidationError("Plat nomor telah terdaftar pada sistem.")
+      if car and cleaned_license_plate != cleaned_old_license_plate:
+        raise ValidationError("Plat nomor telah terdaftar pada sistem.")
   
 
 class CarTransmissionForm(FlaskForm):
@@ -173,9 +174,10 @@ class DivisionEditForm(FlaskForm):
   def validate_name(self, name):
     division_obj = Division.query.filter(Division.name==name.data, Division.status != "Nonaktif").first()
 
-    cleaned_old_name = re.sub(r"\s+", "", self.old_name.data)
-    cleaned_name = re.sub(r"\s+", "", division_obj.name)
+    if division_obj:
+      cleaned_old_name = re.sub(r"\s+", "", self.old_name.data)
+      cleaned_name = re.sub(r"\s+", "", division_obj.name)
 
-    if division_obj and cleaned_name != cleaned_old_name:
-      raise ValidationError("Nama seksi telah terdaftar pada sistem.")
+      if division_obj and cleaned_name != cleaned_old_name:
+        raise ValidationError("Nama seksi telah terdaftar pada sistem.")
     

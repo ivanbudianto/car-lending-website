@@ -9,9 +9,7 @@ import datetime
 # local imports
 from . import public_app
 from .. import db
-from ..models import UsageHelp, Criteria, SubCriteria, LocationPoint, TourType, TourList, TourDistance
 from ..models import Car, CarTransmission, Division
-from ..forms import UsageHelpForm, CriteriaForm, SubCriteriaForm, LocationPointForm, TourTypeForm, TourListForm, TourRecommendation1Form, TourRecommendation2Form, DistanceForm
 from ..forms import CarForm, CarEditForm, DivisionForm, DivisionEditForm, CarTransmissionForm, CarTransmissionEditForm
 from ..utils import check_admin, save_resized_image, process_input_list_based_on_weight
 
@@ -49,18 +47,6 @@ def car():
     .order_by(Car._updated_date.desc())
     
   return render_template("public/services/car/car.html", title="Daftar Wisata - Bondowoso Tourism", datas=datas)
-
-
-@public_app.route("/layanan/daftar-wisata/<id>", methods=["GET", "POST"])
-@login_required
-def tour_list_detail(id):
-  data = TourList.query.filter_by(id=id).first_or_404()
-  facility = SubCriteria.query.filter_by(criteria_id=2, value=data.facility).first_or_404()
-  distance = TourDistance.query.filter_by(tour_list_id=id).first_or_404()
-  infrastructure = SubCriteria.query.filter_by(criteria_id=4, value=data.infrastructure).first_or_404()
-  transportation_access = SubCriteria.query.filter_by(criteria_id=5, value=data.transportation_access).first_or_404()
-  return render_template("public/services/tour_list/tour-list_detail.html", title=f"{data.name} - Bondowoso Tourism", data=data, distance=distance, facility=facility, infrastructure=infrastructure, transportation_access=transportation_access)
-
 
 @public_app.route("/layanan/mobil/tambah", methods=["GET", "POST"])
 @login_required
@@ -270,131 +256,3 @@ def delete_car_transmission(id):
 
   flash("Data telah berhasil dihapus!", "success")
   return redirect(url_for("public_app.car_transmission"))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@public_app.route("/layanan/rekomendasi-wisata/sub-kriteria", methods=["GET", "POST"])
-@login_required
-def tour_recommendation_sub_criteria():
-  if not session.get("form1_filled"):
-    return redirect(url_for("public_app.tour_recommendation"))
-
-  form = TourRecommendation2Form()
-
-  if form.validate_on_submit():
-    location_point = session.get("location_point")
-    tour_type = session.get("tour_type")
-    ticket = str(form.ticket.data)
-    facility = str(form.facility.data)
-    distance = str(form.distance.data)
-    infrastructure = str(form.infrastructure.data)
-    transportation_access = str(form.transportation_access.data)
-
-    criteria = Criteria.query.all()
-
-    avg_weight = [criteria.weight for criteria in criteria]
-    weight_type = [1 if criteria.attribute == "Cost" else 2 for criteria in criteria]
-
-    tours_and_distances = db.session.query(
-      TourList.id,
-      TourList.name,
-      TourList.ticket,
-      TourList.facility,
-      TourList.infrastructure,
-      TourList.transportation_access,
-      TourDistance.distance
-    ).join(
-      TourDistance,
-      TourList.id == TourDistance.tour_list_id
-    ).filter(
-      TourList.tour_type_id == tour_type,
-      TourDistance.location_point_id == location_point
-    ).all()
-
-    facility_subcriteria = SubCriteria.query.filter_by(criteria_id=2, value=facility).first()
-    infrastructure_subcriteria = SubCriteria.query.filter_by(criteria_id=4, value=infrastructure).first()
-    transportation_access_subcriteria = SubCriteria.query.filter_by(criteria_id=5, value=transportation_access).first()
-
-    ticket_category = 0
-    distance_category = 0
-
-    list_ids = []
-    list_names = []
-    filtered_np_list = []
-
-    for tour in tours_and_distances:
-      if tour.ticket == 0:
-        ticket_category = 1
-      elif tour.ticket <= 5000:
-        ticket_category = 2
-      elif tour.ticket <= 10000:
-        ticket_category = 3
-      elif tour.ticket > 10000:
-        ticket_category = 4
-
-      if tour.distance <= 10:
-        distance_category = 1
-      elif tour.distance <= 20:
-        distance_category = 2
-      elif tour.distance <= 30:
-        distance_category = 3
-      elif tour.distance <= 40:
-        distance_category = 4
-      elif tour.distance <= 50:
-        distance_category = 5
-      elif tour.distance > 50:
-        distance_category = 6
-
-      if ticket_category > int(ticket) or tour.facility < int(facility_subcriteria.value) or int(tour.infrastructure) < int(infrastructure_subcriteria.value) or tour.transportation_access < int(transportation_access_subcriteria.value) or distance_category > int(distance):
-        continue
-
-      list_ids.append(tour.id)
-      list_names.append(tour.name)
-      filtered_np_list.append([
-        float(ticket_category),
-        float(tour.facility),
-        float(distance_category),
-        float(tour.infrastructure),
-        float(tour.transportation_access)
-      ])
-
-    filtered_np_array = np.array(filtered_np_list)
-
-    if filtered_np_array.size == 0:
-      return render_template("public/services/tour_recommendation/tour-recommendation_result.html", title="Rekomendasi Wisata - Bondowoso Tourism", result=[], error_message="Wisata yang Anda cari tidak ditemukan.")
-
-    if len(filtered_np_array) == 1:
-      preference_metric = np.array([1.0])
-    else:
-      preference_metric = process_input_list_based_on_weight(filtered_np_array, np.array(avg_weight), weight_type)
-
-    paired_list = list(zip(preference_metric, list_names, list_ids))
-
-    sorted_paired_list = sorted(paired_list, reverse=True)
-
-    top_3_paired_list = sorted_paired_list[:3]
-
-    result = [{"ranking": str(rank), "score": str(int(value * 100)), "tour_object": name, "action": id} for rank, (value, name, id) in enumerate(top_3_paired_list, start=1)]
-
-    session.pop("location_point", None)
-    session.pop("ticket_price", None)
-    session.pop("form1_filled", None)
-
-    return render_template("public/services/tour_recommendation/tour-recommendation_result.html", title="Rekomendasi Wisata - Bondowoso Tourism", result=result)
-
-  return render_template("public/services/tour_recommendation/tour-recommendation-2.html", title="Rekomendasi Wisata - Bondowoso Tourism", form=form)

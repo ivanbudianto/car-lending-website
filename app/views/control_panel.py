@@ -8,7 +8,7 @@ import datetime
 from . import control_panel_app
 from .. import db, bcrypt
 from ..models import User, Division
-from ..forms import RegisterForm, LoginForm, ForgotPasswordForm, ResetPasswordForm, UserEditForm, UserEditPasswordForm
+from ..forms import RegisterForm, LoginForm, UserEditForm, UserEditPasswordForm
 from ..utils import send_password_reset, check_admin
 
 
@@ -55,22 +55,6 @@ def login():
 
   return render_template("control_panel/auth/login.html", title="Masuk - Development", form=form)
 
-@control_panel_app.route("/lupa-password", methods=["GET", "POST"])
-def forgot_password():
-  if current_user.is_authenticated:
-    return redirect(url_for("public_app.homepage"))
-
-  form = ForgotPasswordForm()
-
-  if form.validate_on_submit():
-    user = User.query.filter_by(email=form.email.data).first()
-
-    send_password_reset(user)
-
-    flash("Kami telah mengirimkan email untuk mengatur ulang password Anda ke alamat email Anda.")
-    return redirect(url_for("control_panel_app.login"))
-
-  return render_template("control_panel/auth/forgot-password.html", title="Lupa Password - Development", form=form)
 
 @control_panel_app.route("/lupa-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
