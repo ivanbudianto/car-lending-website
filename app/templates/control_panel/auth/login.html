@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+
+    
+<!-- Mirrored from themesbrand.com/skote-django/layouts/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jul 2021 15:31:22 GMT -->
+<head>
+        
+        <meta charset="utf-8" />
+        <title>Login | Skote - Admin & Dashboard Template</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+        <meta content="Themesbrand" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+        <link href="{{ url_for('static', filename='libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+        
+        <!-- Bootstrap Css -->
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link href="{{ url_for('static', filename='css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link href="{{ url_for('static', filename='css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+
+        
+    </head>
+
+    <body>
+        <div class="account-pages my-5 pt-sm-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card overflow-hidden">
+                            <div class="bg-primary bg-soft">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <div class="text-primary p-4">
+                                            <h5 class="text-primary">Welcome Back !</h5>
+                                            <p>Sign in to continue to Skote.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-5 align-self-end">
+                                        <img src="assets/images/profile-img.png" alt="" class="img-fluid">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body pt-0"> 
+                                <div class="auth-logo">
+                                    <a href="index.html" class="auth-logo-light">
+                                        <div class="avatar-md profile-user-wid mb-4">
+                                            <span class="avatar-title rounded-circle bg-light">
+                                                <img src="assets/images/logo-light.svg" alt="" class="rounded-circle" height="34">
+                                            </span>
+                                        </div>
+                                    </a>
+
+                                    <a href="index.html" class="auth-logo-dark">
+                                        <div class="avatar-md profile-user-wid mb-4">
+                                            <span class="avatar-title rounded-circle bg-light">
+                                                <img src="assets/images/logo.svg" alt="" class="rounded-circle" height="34">
+                                            </span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="p-2">
+                                    <form class="form-horizontal" method="POST">
+                                        {{ form.hidden_tag() }}
+        
+                                        <div class="mb-3">
+                                            <!-- <label for="nip" class="form-label">Nomor Induk Pegawai (NIP)</label> -->
+                                            {{ form.nip.label(class="form-label") }} {% if form.nip.errors %} {{ form.nip(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                            {% for error in form.nip.errors %}
+                                            <span>{{ error }}</span>
+                                            {% endfor %}
+                                            </div>
+                                            {% else %} {{ form.nip(class="form-control") }} {% endif %}
+                                        </div>
+                
+                                        <div class="mb-3">
+                                            <label class="form-label">Kata Sandi</label>
+                                            <div class="input-group auth-pass-inputgroup">
+                                                <!-- , aria-label="Password", aria-describedby="password-addon" -->
+                                                {{ form.password.label(class="form-label") }} {% if form.password.errors %} {{ form.password(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in form.password.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %} {{ form.password(class="form-control", aria_label="Password", aria_describedby="password_addon") }} {% endif %}
+                                                <button class="btn btn-light " type="button" id="password-addon"><i class="mdi mdi-eye-outline"></i></button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-3 d-grid">
+                                            <!-- <button class="btn btn-primary waves-effect waves-light" type="submit">Masuk</button> -->
+                                            {{ form.submit(class="btn btn-primary waves-effect waves-light") }}
+                                        </div>
+
+                                        <div class="mt-4 text-center">
+                                            <a href="auth-recoverpw.html" class="text-muted"><i class="mdi mdi-lock me-1"></i> Forgot your password?</a>
+                                        </div>
+                                    </form>
+                                </div>
+            
+                            </div>
+                        </div>
+                        <div class="mt-5 text-center">
+                            
+                            <div>
+                                <p>Don't have an account ? <a href="auth-register.html" class="fw-medium text-primary"> Signup now </a> </p>
+                                <p>© <script>document.write(new Date().getFullYear())</script> KPP Pratama Kosambi. Crafted with <i class="mdi mdi-heart text-danger"></i> by Jeje</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end account-pages -->
+
+        <!-- JAVASCRIPT -->
+        <script src="{{ url_for('static', filename='libs/jquery/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/metismenu/metisMenu.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/simplebar/simplebar.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/node-waves/waves.min.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        
+        <!-- App js -->
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const rowId = this.dataset.id;
+                    const rowDetail = this.dataset.detail;
+                    // const itemId = this.data('id');
+
+
+                    Swal.fire({
+                        title: 'Apakah anda yakin?',
+                        text: `Pengguna dengan NIP ${rowDetail} akan terhapus. `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Hapus',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            // Example: DELETE with fetch
+                            window.location.href = `/pengguna/hapus/${rowId}`;
+                        }
+                    });
+                });
+            });
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    // Display SweetAlert for success messages
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sukses!',
+                        text: '{{ message }}',
+                        timer: 3000, // Optional: auto-close after 3 seconds
+                        showConfirmButton: true
+                    });
+                {% elif category == 'error' or category == 'danger' %}
+                    // Optional: Handle error/danger messages with a different icon
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ message }}'
+                    });
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+        </script>
+    </body>
+
+<!-- Mirrored from themesbrand.com/skote-django/layouts/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jul 2021 15:31:22 GMT -->
+</html>
+

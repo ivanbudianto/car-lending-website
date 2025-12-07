@@ -1,0 +1,139 @@
+{% extends 'components/public/base.html' %} {% set active_page = 'car_transmission' %}
+{% block content %}
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+            <div class="main-content">
+
+                <div class="page-content">
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                    <h4 class="mb-sm-0 font-size-18">Form Edit Transmisi Mobil</h4>
+
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Forms</a></li>
+                                            <li class="breadcrumb-item active">Form Elements</li>
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                      <div class="card-body">
+                                        <h4 class="card-title">Textual inputs</h4>
+                                        <p class="card-title-desc">Here are examples of <code>.form-control</code> applied to
+                                            each
+                                            textual HTML5 <code>&lt;input&gt;</code> <code>type</code>.</p>
+
+                                        <form enctype="multipart/form-data" method="POST">
+                                          {{ form.hidden_tag() }}
+
+                                            <div class="row mb-4">
+                                                {{ form.name.label(class="col-sm-3 col-form-label") }}
+                                                
+                                                <div class="col-sm-9">
+                                                    {% if form.name.errors %}
+                                                        {{ form.name(class="form-control is-invalid") }} 
+                                                        <div class="invalid-feedback">
+                                                            {% for error in form.name.errors %}
+                                                            <span>{{ error }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    {% else %}
+                                                        {{ form.name(class="form-control") }} 
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            <div class="row justify-content-end">
+                                                <div class="col-sm-9">
+                                                    <div>
+                                                        <button type="submit" class="btn btn-primary w-md">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div>
+                        <!-- end row -->
+                    </div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+
+
+                {% include 'components/public/includes/footer.html' %}
+            </div>
+            <!-- end main content-->
+
+{% endblock %}
+
+{% block javascript %}
+
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const rowId = this.dataset.id;
+                    const rowDetail = this.dataset.detail;
+                    // const itemId = this.data('id');
+
+
+                    Swal.fire({
+                        title: 'Apakah anda yakin?',
+                        text: `Transmisi mobil dengan nama ${rowDetail} akan terhapus. `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Hapus',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            // Example: DELETE with fetch
+                            window.location.href = `/layanan/transmisi-mobil/hapus/${rowId}`;
+                        }
+                    });
+                });
+            });
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    // Display SweetAlert for success messages
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sukses!',
+                        text: '{{ message }}',
+                        timer: 3000, // Optional: auto-close after 3 seconds
+                        showConfirmButton: true
+                    });
+                {% elif category == 'error' or category == 'danger' %}
+                    // Optional: Handle error/danger messages with a different icon
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ message }}'
+                    });
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+        </script>
+
+{% endblock %}
+

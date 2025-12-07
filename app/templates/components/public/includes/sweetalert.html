@@ -1,0 +1,26 @@
+<!-- 
+<script>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    // Display SweetAlert for success messages
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: '{{ message }}',
+                        timer: 3000, // Optional: auto-close after 3 seconds
+                        showConfirmButton: false
+                    });
+                {% elif category == 'error' or category == 'danger' %}
+                    // Optional: Handle error/danger messages with a different icon
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ message }}'
+                    });
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</script> -->

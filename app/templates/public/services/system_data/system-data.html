@@ -1,0 +1,93 @@
+{% extends 'components/public/base.html' %} {% set active_page = 'system_data' %} {% block content %}
+<!-- Banner -->
+<div class="banner d-flex bg-hero h-20rem">
+  <div class="container my-auto">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-10">
+        <div class="text-white text-center">
+          <h2 class="fw-bold fs-3 title-clamp-2 mb-0">Data Sistem</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Banner -->
+
+<!-- Page Wrapper -->
+<div class="page-wrapper bg-body-tertiary">
+  <div class="container">
+    <div class="row justify-content-center align-items-center pt-5">
+      <div class="col-lg-10">
+        <div class="d-flex flex-column row-gap-3">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center align-items-center mb-0">
+              <li class="breadcrumb-item"><a class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover" href="{{ url_for('public_app.services') }}">Layanan</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Data Sistem</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <div class="row flex-column justify-content-center align-items-center row-gap-4 py-5">
+      <div class="col-lg-5">
+        <div class="card hover-upwards shadow-sm rounded-3">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-start align-items-center column-gap-3">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" height="2em" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2" />
+                </svg>
+              </div>
+              <a class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0" href="{{ url_for('public_app.criteria') }}">Kriteria</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card hover-upwards shadow-sm rounded-3">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-start align-items-center column-gap-3">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" height="2em" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5z" />
+                  <path d="M4.268 1A2 2 0 0 1 6 0h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L13 13.768V2a1 1 0 0 0-1-1z" />
+                </svg>
+              </div>
+              <a class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0" href="{{ url_for('public_app.sub_criteria') }}">Sub Kriteria</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card hover-upwards shadow-sm rounded-3">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-start align-items-center column-gap-3">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" height="2em" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                </svg>
+              </div>
+              <a class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0" href="{{ url_for('public_app.location_point') }}">Titik Lokasi</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card hover-upwards shadow-sm rounded-3">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-start align-items-center column-gap-3">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" height="2em" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M7.293.707A1 1 0 0 0 7 1.414V4H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h5v6h2v-6h3.532a1 1 0 0 0 .768-.36l1.933-2.32a.5.5 0 0 0 0-.64L13.3 4.36a1 1 0 0 0-.768-.36H9V1.414A1 1 0 0 0 7.293.707" />
+                </svg>
+              </div>
+              <a class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0" href="{{ url_for('public_app.tour_type') }}">Jenis Wisata</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+{% endblock %}

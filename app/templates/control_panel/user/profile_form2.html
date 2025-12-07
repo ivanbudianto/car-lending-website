@@ -1,0 +1,87 @@
+{% extends 'components/public/base.html' %} {% block content %}
+<!-- Banner -->
+<div class="banner d-flex bg-hero h-20rem">
+  <div class="container my-auto">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-10">
+        <div class="text-white text-center">
+          <h2 class="fw-bold fs-3 title-clamp-2 mb-0">Edit Profil</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Banner -->
+
+<!-- Page Wrapper -->
+<div class="page-wrapper bg-body-tertiary">
+  <div class="container">
+    <div class="row justify-content-center align-items-center py-5">
+      <div class="col-lg-10">
+        <div class="card shadow-sm rounded-3">
+          <div class="card-body p-lg-5 py-5 px-4">
+            <form method="POST">
+              {{ form.hidden_tag() }}
+              <div class="mb-3">
+                {{ form.name.label(class="form-label") }} {% if form.name.errors
+                %} {{ form.name(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.name.errors %}
+                  <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+                {% else %} {{ form.name(class="form-control") }} {% endif %}
+              </div>
+              <div class="mb-3">
+                {{ form.gender.label(class="form-label") }} {% if
+                form.gender.errors %} {{ form.gender(class="form-select
+                is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.gender.errors %}
+                  <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+                {% else %} {{ form.gender(class="form-select") }} {% endif %}
+              </div>
+              <div class="mb-3">
+                {{ form.phone.label(class="form-label") }} {% if
+                form.phone.errors %} {{ form.phone(class="form-control
+                is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.phone.errors %}
+                  <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+                {% else %} {{ form.phone(class="form-control") }} {% endif %}
+              </div>
+              <div class="mb-3">
+                {{ form.email.label(class="form-label") }} {% if
+                form.email.errors %} {{ form.email(class="form-control
+                is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.email.errors %}
+                  <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+                {% else %} {{ form.email(class="form-control") }} {% endif %}
+              </div>
+              <div
+                class="d-flex flex-row justify-content-end align-items-center column-gap-2"
+              >
+                <a
+                  class="btn btn-secondary rounded-5 py-1 px-3"
+                  href="{{ url_for('control_panel_app.profile', id=current_user.id) }}"
+                  role="button"
+                  >Batal</a
+                >
+                {{ form.submit(class="btn btn-success rounded-5 py-1 px-3") }}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'components/public/base.html' %} {% set active_page = 'services' %}
+{% block content %}
+<!-- Banner -->
+<div class="banner d-flex bg-hero h-20rem">
+  <div class="container my-auto">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-10">
+        <div class="text-white text-center">
+          <h2 class="fw-bold fs-3 title-clamp-2 mb-0">Layanan</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Banner -->
+
+<!-- Page Wrapper -->
+<div class="page-wrapper bg-body-tertiary">
+  <div class="container">
+    {% if current_user.role == "admin" %}
+    <div class="row justify-content-center align-items-center pt-5">
+      <div class="col-lg-10">
+        <h3 class="fw-semibold fs-5 mb-0" data-aos="fade-up">
+          Daftar menu layanan yang tersedia:
+        </h3>
+      </div>
+    </div>
+    <div class="row justify-content-center align-items-center row-gap-4 py-5">
+      <div class="col-lg-5 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.usage_help') }}"
+                >Bantuan Penggunaan</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang langkah-langkah dalam menentukam rekomendasi
+                wisata.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.system_data') }}"
+                >Data Sistem</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang data-data yang dibutuhkan oleh sistem.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.tour_list') }}"
+                >Daftar Wisata</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang daftar objek wisata yang ada di Kabupaten
+                Bondowoso.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.tour_recommendation') }}"
+                >Rekomendasi Wisata</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang rekomendasi objek wisata di Kabupaten Bondowoso
+                dengan cara memilih jawaban dalam form yang telah ditampilkan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="row justify-content-start align-items-center pt-5">
+      <div class="col-lg-10">
+        <h3 class="fw-semibold fs-5 mb-0" data-aos="fade-up">
+          Daftar menu layanan yang tersedia:
+        </h3>
+      </div>
+    </div>
+    <div class="row justify-content-start align-items-center row-gap-4 py-5">
+      <div class="col-lg-4 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.usage_help') }}"
+                >Bantuan Penggunaan</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang langkah-langkah dalam menentukam rekomendasi
+                wisata.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.tour_list') }}"
+                >Daftar Wisata</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang daftar objek wisata yang ada di Kabupaten
+                Bondowoso.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 d-flex align-self-stretch">
+        <div
+          class="card hover-upwards shadow-sm rounded-3"
+          style="width: 100% !important"
+        >
+          <div class="card-body p-4">
+            <div class="d-flex flex-column row-gap-2">
+              <a
+                class="h6 fw-semibold fs-5 text-decoration-none text-clamp-2 stretched-link mb-0"
+                href="{{ url_for('public_app.tour_recommendation') }}"
+                >Rekomendasi Wisata</a
+              >
+              <p class="small text-clamp-3 mb-0">
+                Berisi tentang rekomendasi objek wisata di Kabupaten Bondowoso
+                dengan cara memilih jawaban dalam form yang telah ditampilkan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+{% endblock %}

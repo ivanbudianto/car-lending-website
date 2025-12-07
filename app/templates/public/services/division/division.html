@@ -1,0 +1,180 @@
+<!-- {% block stylesheet_template %}
+        <link href="{{ url_for('static', filename='libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ url_for('static', filename='libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ url_for('static', filename='libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %} -->
+
+{% extends 'components/public/base.html' %} {% set active_page = 'division' %}
+{% block content %}
+
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+            <div class="main-content">
+
+                <div class="page-content">
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                    <h4 class="mb-sm-0 font-size-18">Daftar Seksi</h4>
+
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Forms</a></li>
+                                            <li class="breadcrumb-item active">Form Elements</li>
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+        
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+        
+                                        <h4 class="card-title">Buttons example</h4>
+                                        <p class="card-title-desc">The Buttons extension for DataTables
+                                            provides a common set of options, API methods and styling to display
+                                            buttons on a page that will interact with a DataTable. The core library
+                                            provides the based framework upon which plug-ins can built.
+                                        </p>
+
+                                        <a href="/layanan/seksi/tambah"><button type="button" 
+                                        <button type="button" class="btn btn-success waves-effect waves-light mb-3 w-lg" id="sa-danger">
+                                                        <i class="bx bx-plus font-size-16 align-middle me-2"></i> Tambah
+                                                    </button>
+                                        </a>
+
+        
+                                        <table id="datatable-buttons" class="table table-bordered dt-responsive nowrap w-100">
+                                            
+                                            <thead>
+                                            <tr>
+                                                <th>Nama Singkat</th>
+                                                <th>Nama Resmi</th>
+                                                <th>Tanggal Ditambahkan (DD/MM/YYYY, HH:MM:SS)</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                            </thead>
+        
+        
+                                            <tbody>
+                                            {% for item in datas %}
+                                            <tr>
+                                                <td>{{ item.code }}</td>
+                                                <td>{{ item.name }}</td>
+                                                <td>{{ item._inserted_date.strftime('%d/%m/%Y, %H:%M:%S') }}</td>
+                                                <td>
+                                                    <a href="/layanan/seksi/edit/{{ item.id }}" class="btn-edit">
+                                                        <button type="button" class="btn btn-warning waves-effect waves-light">
+                                                            <i class="bx bxs-pencil font-size-16 align-middle me-2"></i> Edit
+                                                        </button>
+                                                    </a>
+                                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-delete" data-id="{{ item.id }}" data-detail="{{ item.name }}" id="sa-danger">
+                                                        <i class="bx bxs-trash font-size-16 align-middle me-2"></i> Hapus
+                                                    </button>
+
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                    </div> <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+
+
+                {% include 'components/public/includes/footer.html' %}
+            </div>
+            <!-- end main content-->
+
+{% endblock %}
+
+{% block javascript
+%}
+
+
+        <script src="{{ url_for('static', filename='libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='libs/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/jszip/jszip.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/pdfmake/build/pdfmake.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/pdfmake/build/vfs_fonts.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+
+        <script src="{{ url_for('static', filename='js/pages/datatables.init.js') }}"></script>
+
+
+        <script>
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const rowId = this.dataset.id;
+                    const rowDetail = this.dataset.detail;
+                    // const itemId = this.data('id');
+
+
+                    Swal.fire({
+                        title: 'Apakah anda yakin?',
+                        text: `Seksi dengan nama ${rowDetail} akan terhapus. `,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Hapus',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            // Example: DELETE with fetch
+                            window.location.href = `/layanan/seksi/hapus/${rowId}`;
+                        }
+                    });
+                });
+            });
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    // Display SweetAlert for success messages
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sukses!',
+                        text: '{{ message }}',
+                        timer: 3000, // Optional: auto-close after 3 seconds
+                        showConfirmButton: true
+                    });
+                {% elif category == 'error' or category == 'danger' %}
+                    // Optional: Handle error/danger messages with a different icon
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ message }}'
+                    });
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+        </script>
+
+{% endblock %}
+

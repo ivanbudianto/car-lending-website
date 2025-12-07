@@ -1,0 +1,46 @@
+<!doctype html>
+  <html lang="en">
+
+<!-- Mirrored from themesbrand.com/skote-django/layouts/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jul 2021 15:30:05 GMT -->
+    <head>
+        
+        <meta charset="utf-8" />
+        <title>{{ title }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+        <meta content="Themesbrand" name="author" />
+
+        <!-- Favicon -->  
+        {% include 'components/public/includes/favicon.html' %}
+
+        <!-- Fonts -->
+        {% include 'components/public/includes/fonts.html' %}
+
+        <!-- Styles -->
+        {% block stylesheet_template %}{% endblock %}
+        {% include 'components/public/includes/styles.html' %}
+        {% block stylesheet %}{% endblock %}
+
+    </head>
+
+    <body data-sidebar="dark">
+        <!-- Begin page -->
+        <div id="layout-wrapper">
+          {% include 'components/public/includes/navbar.html' %}
+
+          {% block content %}{% endblock %}
+        </div>
+        <!-- END layout-wrapper -->
+
+
+        <!-- JAVASCRIPT -->
+        <!-- Scripts -->
+        {% include 'components/public/includes/scripts.html' %} 
+        {% include 'components/public/includes/scriptsend.html' %}
+        {% block javascript
+        %}{% endblock %}
+    </body>
+
+
+<!-- Mirrored from themesbrand.com/skote-django/layouts/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 01 Jul 2021 15:30:43 GMT -->
+</html>

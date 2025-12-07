@@ -1,0 +1,110 @@
+{% extends 'components/public/base.html' %} {% block content %}
+<!-- Banner -->
+<div class="banner d-flex bg-hero h-20rem">
+  <div class="container my-auto">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-10">
+        <div class="text-white text-center">
+          <h2 class="fw-bold fs-3 title-clamp-2 mb-0">Profil</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Banner -->
+
+<!-- Page Wrapper -->
+<div class="page-wrapper bg-body-tertiary">
+  <div class="container">
+    <div class="row justify-content-center align-items-center py-5">
+      <div class="col-lg-5">
+        <div class="container">
+          <div
+            class="row flex-column justify-content-center align-items-center row-gap-4"
+          >
+            <div class="col-lg-12">
+              <div
+                class="row flex-column justify-content-center align-items-center row-gap-3 text-center"
+              >
+                <div class="col-6 col-lg-4">
+                  <div
+                    class="bg-body-secondary border border-secondary rounded-circle p-3"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="100%"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <h3 class="fw-semibold fs-5 text-clamp-2 mb-0">
+                    {{ user.name }}
+                  </h3>
+                  <p class="text-capitalize text-black-50 text-clamp-1 mb-0">
+                    {{ user.role }}
+                  </p>
+                </div>
+                <div class="col-lg-12">
+                  {% if current_user.email == user.email %}
+                  <a
+                    class="btn btn-primary rounded-5 py-1 px-3"
+                    href="{{ url_for('control_panel_app.edit_profile', id=current_user.id) }}"
+                    role="button"
+                    >Edit Profil</a
+                  >
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-12">
+              <div class="row row-gap-3">
+                <div class="col-lg-12">
+                  <p class="fw-semibold mb-0">Nomor HP</p>
+                  <p class="text-black-50 text-clamp-1 mb-0">
+                    {{ user.phone }}
+                  </p>
+                </div>
+                <div class="col-lg-12">
+                  <p class="fw-semibold mb-0">Email</p>
+                  <p class="text-black-50 text-clamp-1 mb-0">
+                    {{ user.email }}
+                  </p>
+                </div>
+                <div class="col-lg-12">
+                  <p class="fw-semibold mb-0">Jenis Kelamin</p>
+                  <p class="text-black-50 text-clamp-1 mb-0">
+                    {{ user.gender }}
+                  </p>
+                </div>
+                <div class="col-lg-12">
+                  <p class="fw-semibold mb-0">Bergabung pada</p>
+                  <p class="text-black-50 text-clamp-1 mb-0">
+                    {{ user.joined_date.strftime('%#B %d, %Y') }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Toast -->
+{% include 'components/public/includes/toast.html' %}
+<!-- End of Toast -->
+{% endblock %} {% block javascript %}
+<script>
+  $(function () {
+    $(".toast").toast("show");
+  });
+</script>
+{% endblock %}
