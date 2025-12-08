@@ -57,10 +57,10 @@ def create_car():
   if form.validate_on_submit():
     if form.image.data:
       image = save_resized_image(form.image.data, 1280, 720, "tour_list")
-      new_car = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Tersedia", image=image)
+      new_car = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Tersedia", image=image, _updated_by=current_user.id)
       # new_tour_list = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=form.transmission_id.data, image=image, user=current_user)
     else:
-      new_car = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Tersedia")
+      new_car = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Tersedia", _updated_by=current_user.id)
 
 
     db.session.add(new_car)
@@ -199,14 +199,14 @@ def delete_division(id):
 
 # Car Transmissions Routes
 
-@public_app.route("/layanan/transmisi-mobil", methods=["GET", "POST"])
+@public_app.route("/layanan/tipe-mobil", methods=["GET", "POST"])
 @login_required
 def car_transmission():
   datas = CarTransmission.query.filter(CarTransmission.status != 'Nonaktif').order_by(CarTransmission.id.asc())
   return render_template("public/services/car_transmission/car-transmission.html", title="Daftar Wisata - Bondowoso Tourism", datas=datas)
 
 
-@public_app.route("/layanan/transmisi-mobil/tambah", methods=["GET", "POST"])
+@public_app.route("/layanan/tipe-mobil/tambah", methods=["GET", "POST"])
 @login_required
 def create_car_transmission():
   check_admin()
@@ -223,7 +223,7 @@ def create_car_transmission():
 
   return render_template("public/services/car_transmission/car-transmission_form.html", title="Tambah Daftar Wisata - Bondowoso Tourism", form=form, operation="Tambah")
 
-@public_app.route("/layanan/transmisi-mobil/edit/<id>", methods=["GET", "POST"])
+@public_app.route("/layanan/tipe-mobil/edit/<id>", methods=["GET", "POST"])
 @login_required
 def edit_car_transmission(id):
   check_admin()
@@ -246,7 +246,7 @@ def edit_car_transmission(id):
 
   return render_template("public/services/car_transmission/car-transmission_edit-form.html", title="Edit Daftar Wisata - Bondowoso Tourism", form=form, operation="Edit")
 
-@public_app.route("/layanan/transmisi-mobil/hapus/<id>", methods=["GET", "POST"])
+@public_app.route("/layanan/tipe-mobil/hapus/<id>", methods=["GET", "POST"])
 @login_required
 def delete_car_transmission(id):
   check_admin()

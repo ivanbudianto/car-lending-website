@@ -1,6 +1,6 @@
 # third-party imports
 from flask import current_app
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
@@ -67,10 +67,11 @@ class Car(db.Model):
   name = db.Column(db.String(128), nullable=False)
   license_plate = db.Column(db.String(15), nullable=False)
   transmission_id = db.Column(db.Integer, db.ForeignKey('car_transmissions.id'), nullable=False)
-  image = db.Column(db.String(128), nullable=False)
+  image = db.Column(db.String(128), nullable=True)
   status = db.Column(db.String(30), nullable=False)
   _inserted_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
   _updated_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
+  _updated_by = db.Column(db.Integer, nullable=False, default=999)
 
   # transmission = db.relationship("CarTransmission", back_populates="car_transmission")
   # distances = db.relationship("TourDistance", backref="tour_list", lazy=True) # relationship to distances

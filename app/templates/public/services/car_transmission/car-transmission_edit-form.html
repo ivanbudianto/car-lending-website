@@ -13,7 +13,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0 font-size-18">Form Edit Transmisi Mobil</h4>
+                                    <h4 class="mb-sm-0 font-size-18">Form Edit Tipe Mobil</h4>
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
@@ -93,7 +93,7 @@
 
                     Swal.fire({
                         title: 'Apakah anda yakin?',
-                        text: `Transmisi mobil dengan nama ${rowDetail} akan terhapus. `,
+                        text: `Data tipe mobil ${rowDetail} akan terhapus. `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
@@ -104,7 +104,7 @@
                         if (result.isConfirmed) {
 
                             // Example: DELETE with fetch
-                            window.location.href = `/layanan/transmisi-mobil/hapus/${rowId}`;
+                            window.location.href = `/layanan/tipe-mobil/hapus/${rowId}`;
                         }
                     });
                 });

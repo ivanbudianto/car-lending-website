@@ -73,19 +73,19 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row mb-4">
-                                                {{ form.division.label(class="col-sm-3 col-form-label") }}
+                                             <div class="row mb-4">
+                                                {{ form.division_id.label(class="col-sm-3 col-form-label") }}
                                                 
                                                 <div class="col-sm-9">
-                                                    {% if form.division.errors %}
-                                                        {{ form.division(class="form-select is-invalid") }}
+                                                    {% if form.division_id.errors %}
+                                                        {{ form.division_id(class="form-select is-invalid") }}
                                                         <div class="invalid-feedback">
-                                                            {% for error in form.division.errors %}
+                                                            {% for error in form.division_id.errors %}
                                                             <span>{{ error }}</span>
                                                             {% endfor %}
                                                         </div>
                                                     {% else %}
-                                                        {{ form.division(class="form-select") }} 
+                                                        {{ form.division_id(class="form-select") }} 
                                                     {% endif %}
                                                 </div>
                                             </div>

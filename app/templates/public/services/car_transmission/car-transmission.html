@@ -19,7 +19,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0 font-size-18">Daftar Transmisi Mobil</h4>
+                                    <h4 class="mb-sm-0 font-size-18">Daftar Tipe Mobil</h4>
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
@@ -46,7 +46,7 @@
                                             provides the based framework upon which plug-ins can built.
                                         </p>
 
-                                        <a href="/layanan/transmisi-mobil/tambah"><button type="button" 
+                                        <a href="/layanan/tipe-mobil/tambah"><button type="button" 
                                         <button type="button" class="btn btn-success waves-effect waves-light mb-3 w-lg" id="sa-danger">
                                                         <i class="bx bx-plus font-size-16 align-middle me-2"></i> Tambah
                                                     </button>
@@ -57,8 +57,8 @@
                                             
                                             <thead>
                                             <tr>
-                                                <th>Nama/Jenis Transmisi</th>
-                                                <th>Tanggal Ditambahkan (DD/MM/YYYY, HH:MM:SS)</th>
+                                                <th>Tipe Mobil</th>
+                                                <th>Tanggal Ditambahkan</th>
                                                 <th>Aksi</th>
                                             </tr>
                                             </thead>
@@ -70,7 +70,7 @@
                                                 <td>{{ item.name }}</td>
                                                 <td>{{ item._inserted_date.strftime('%d/%m/%Y, %H:%M:%S') }}</td>
                                                 <td>
-                                                    <a href="/layanan/transmisi-mobil/edit/{{ item.id }}" class="btn-edit">
+                                                    <a href="/layanan/tipe-mobil/edit/{{ item.id }}" class="btn-edit">
                                                         <button type="button" class="btn btn-warning waves-effect waves-light">
                                                             <i class="bx bxs-pencil font-size-16 align-middle me-2"></i> Edit
                                                         </button>
@@ -131,7 +131,7 @@
 
                     Swal.fire({
                         title: 'Apakah anda yakin?',
-                        text: `Transmisi mobil dengan nama ${rowDetail} akan terhapus. `,
+                        text: `Data tipe mobil ${rowDetail} akan terhapus. `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
@@ -142,7 +142,7 @@
                         if (result.isConfirmed) {
 
                             // Example: DELETE with fetch
-                            window.location.href = `/layanan/transmisi-mobil/hapus/${rowId}`;
+                            window.location.href = `/layanan/tipe-mobil/hapus/${rowId}`;
                         }
                     });
                 });

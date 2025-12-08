@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, InputRequired, Email, Length, Equal
 from wtforms_sqlalchemy.fields import QuerySelectField, QueryRadioField
 from flask_login import current_user
 import re
+from sqlalchemy import func, or_
 
 # local imports
 from .models import User
@@ -15,33 +16,11 @@ from . import bcrypt
 
 
 class RegisterForm(FlaskForm):
-  name = StringField("Nama Lengkap", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
-  nip = StringField("Nomor Induk Pegawai", validators=[DataRequired(), Length(min=9, max=10, message="Kolom harus diisi 9 hingga 10 karakter.")])
-
-
-  division = SelectField(
-        'Seksi',  # This is the Label text SUKI, 
-        choices=[
-            ('1', 'Subbagian Umum dan Kepegawaian Internal'),
-            ('2', 'Pengawas 1'),
-            ('3', 'Pengawas 2'),
-            ('4', 'Pengawas 3'),
-            ('5', 'Pengawas 4'),
-            ('6', 'Pengawas 5'),
-            ('7', 'Pengawas 6'),
-            ('8', 'Penjamin Kualitas Data'),
-            ('9', 'Finance & Accounting'),
-            ('10', 'Fungsional Pemeriksa Pajak 1'),
-            ('11', 'Fungsional Pemeriksa Pajak 2'),
-            ('12', 'Fungsional Pemeriksa Pajak 3'),
-            ('13', 'Pemeriksaan, Penilaian, dan Penagihan'),
-            ('14', 'Lainnya')
-        ],
-        validators=[DataRequired()]
-    )
-
-  password = PasswordField("Kata Sandi", validators=[DataRequired(), Length(min=8, max=128, message="Kata sandi harus memiliki panjang setidaknya 8 karakter.")])
-  confirm = PasswordField("Konfirmasi Kata Sandi", validators=[DataRequired(), Length(min=8, max=128), EqualTo("password", message="Konfirmasi kata sandi tidak cocok.")])
+  name = StringField("Nama Lengkap", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  nip = StringField("Nomor Induk Pegawai", validators=[DataRequired(), Length(min=1, max=10, message="Kolom harus diisi 9 hingga 10 karakter.")])
+  division_id = QuerySelectField("Seksi", validators=[DataRequired()], query_factory=lambda: Division.query.filter(Division.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Seksi")
+  password = PasswordField("Kata Sandi", validators=[DataRequired(), Length(min=1, max=128, message="Kata sandi harus memiliki panjang setidaknya 8 karakter.")])
+  confirm = PasswordField("Konfirmasi Kata Sandi", validators=[DataRequired(), Length(min=1, max=128), EqualTo("password", message="Konfirmasi kata sandi tidak cocok.")])
   submit = SubmitField("Daftar")
 
 
@@ -52,9 +31,30 @@ class RegisterForm(FlaskForm):
   # _updated_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
   def validate_nip(self, nip):
-    user = User.query.filter_by(nip=nip.data).first()
-    if user:
-      raise ValidationError("NIP telah terdaftar pada sistem.")
+    if len(nip.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_nip = re.sub(r"\s+", "", self.nip.data).lower()
+    
+    cleaned_db_nip = func.lower(func.replace(User.nip, " ", ""))
+    user_obj = User.query.filter(
+          cleaned_db_nip == cleaned_nip.lower().replace(" ", ""),
+          User.status != "Nonaktif"
+        ).first()
+    if user_obj:
+      raise ValidationError("NIP ini telah terdaftar pada sistem.")
+    
+  def validate_name(self, name):
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+  def validate_password(self, password):
+    if len(password.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+  def validate_confirm(self, confirm):
+    if len(confirm.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
 
 class LoginForm(FlaskForm):
   nip = StringField("Nomor Induk Pegawai (NIP)", validators=[DataRequired(), Length(min=9, max=10, message="NIP yang Anda masukkan tidak valid.")], render_kw={"placeholder": "Masukkan NIP Anda disini"})
@@ -63,11 +63,15 @@ class LoginForm(FlaskForm):
 
 
 class UserEditForm(FlaskForm):
-  name = StringField("Nama Lengkap", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  name = StringField("Nama Lengkap", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
   nip = StringField("Nomor Induk Pegawai", validators=[DataRequired(), Length(min=9, max=10, message="Kolom harus diisi 9 hingga 10 karakter.")])
-  division_id = QuerySelectField("Seksi", validators=[DataRequired()], query_factory=lambda: Division.query.all(), get_label="name", allow_blank=True, blank_text="Pilih Seksi")
+  division_id = QuerySelectField("Seksi", validators=[DataRequired()], query_factory=lambda: Division.query.filter(Division.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Seksi")
 
   submit = SubmitField("Daftar")
+
+  def validate_name(self, name):
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
 
 class UserEditPasswordForm(FlaskForm):
   old_id = HiddenField()
@@ -91,19 +95,48 @@ class UserEditPasswordForm(FlaskForm):
 
 
 class CarForm(FlaskForm):
-  name = StringField("Nama/Jenis Mobil", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
-  license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
-  transmission_id = QuerySelectField("Jenis Transmisi", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.all(), get_label="name", allow_blank=True, blank_text="Pilih Tipe Transmisi")
+  name = StringField("Nama/Jenis Mobil", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  transmission_id = QuerySelectField("Tipe Mobil", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.filter(CarTransmission.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Tipe Mobil")
 
   image = FileField("Gambar", validators=[FileAllowed(["jpg", "jpeg", "png"], message="File yang Anda unggah tidak diperbolehkan. Silakan unggah file dalam format .jpg, .jpeg, atau .png.")])
   submit = SubmitField("Daftar")
 
+  def validate_name(self, name):
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    # cleaned_name = re.sub(r"\s+", "", self.name.data).lower()
+    
+    # cleaned_db_name = func.lower(func.replace(Car.name, " ", ""))
+    # car_obj = Car.query.filter(
+    #       cleaned_db_name == cleaned_name.lower().replace(" ", ""),
+    #       Car.status != "Nonaktif"
+    #     ).first()
+    # if car_obj:
+    #   raise ValidationError("Plat nomor ini telah terdaftar pada sistem.")
+
+    
+  def validate_license_plate(self, license_plate):
+    if len(license_plate.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_license_plate = re.sub(r"\s+", "", self.license_plate.data).lower()
+    
+    cleaned_db_license_plate = func.lower(func.replace(Car.license_plate, " ", ""))
+    car_obj = Car.query.filter(
+          cleaned_db_license_plate == cleaned_license_plate.lower().replace(" ", ""),
+          Car.status != "Nonaktif"
+        ).first()
+    if car_obj:
+      raise ValidationError("Plat nomor ini telah terdaftar pada sistem.")
+
 
 class CarEditForm(FlaskForm):
   old_license_plate = HiddenField()
-  name = StringField("Nama/Jenis Mobil", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
-  license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
-  transmission_id = QuerySelectField("Jenis Transmisi", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.all(), get_label="name", allow_blank=True, blank_text="Pilih Tipe Transmisi")
+  name = StringField("Nama/Jenis Mobil", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  transmission_id = QuerySelectField("Tipe Mobil", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.filter(CarTransmission.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Tipe Mobil")
 
   status_label = SelectField(
         'Status Mobil', 
@@ -121,63 +154,143 @@ class CarEditForm(FlaskForm):
   image = FileField("Gambar", validators=[FileAllowed(["jpg", "jpeg", "png"], message="File yang Anda unggah tidak diperbolehkan. Silakan unggah file dalam format .jpg, .jpeg, atau .png.")])
   submit = SubmitField("Edit Data")
 
+
+  def validate_name(self, name):
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+
   def validate_license_plate(self, license_plate):
-    car = Car.query.filter(Car.license_plate==license_plate.data, Car.status != "Nonaktif").first()
+    if len(license_plate.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_license_plate = re.sub(r"\s+", "", self.license_plate.data).lower()
+    cleaned_old_license_plate = re.sub(r"\s+", "", self.old_license_plate.data).lower()
+    cleaned_db_license_plate = func.lower(func.replace(Car.license_plate, " ", ""))
 
-    if car:
-      cleaned_old_license_plate = re.sub(r"\s+", "", self.old_license_plate.data)
-      cleaned_license_plate = re.sub(r"\s+", "", car.license_plate)
-
-      if car and cleaned_license_plate != cleaned_old_license_plate:
-        raise ValidationError("Plat nomor telah terdaftar pada sistem.")
+    car_obj = Car.query.filter(
+        cleaned_db_license_plate == cleaned_license_plate.lower().replace(" ", ""),
+        Car.status != "Nonaktif"
+        ).first()
+    if car_obj and (cleaned_license_plate == car_obj.license_plate.lower().replace(" ", "") and cleaned_old_license_plate != cleaned_license_plate):
+      print(cleaned_license_plate, cleaned_old_license_plate, car_obj.license_plate.lower().replace(" ", ""))
+      raise ValidationError("Plat nomor telah terdaftar pada sistem.")
   
 
 class CarTransmissionForm(FlaskForm):
-  name = StringField("Nama/Jenis Transmisi", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  name = StringField("Tipe Mobil", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
   submit = SubmitField("Tambahkan Data")
+
+  def validate_name(self, name):
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_name = re.sub(r"\s+", "", self.name.data).lower()
+    
+    cleaned_db_name = func.lower(func.replace(CarTransmission.name, " ", ""))
+    car_transmission_obj = CarTransmission.query.filter(
+          cleaned_db_name == cleaned_name.lower().replace(" ", ""),
+          CarTransmission.status != "Nonaktif"
+        ).first()
+    if car_transmission_obj:
+      raise ValidationError("Tipe ini telah terdaftar pada sistem.")
+    
+
 
 class CarTransmissionEditForm(FlaskForm):
   old_name = HiddenField()
-  name = StringField("Nama Seksi (Resmi)", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  name = StringField("Tipe Mobil", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
   submit = SubmitField("Edit Data")
 
   def validate_name(self, name):
-    transmission_obj = CarTransmission.query.filter(CarTransmission.name==name.data, CarTransmission.status != "Nonaktif").first()
-    if transmission_obj:
-      cleaned_old_name = re.sub(r"\s+", "", self.old_name.data)
-      cleaned_name = re.sub(r"\s+", "", transmission_obj.name)
-      if cleaned_name != cleaned_old_name:
-        raise ValidationError("Nama/Jenis Transmisi telah terdaftar pada sistem.")
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_name = re.sub(r"\s+", "", self.name.data).lower()
+    cleaned_old_name = re.sub(r"\s+", "", self.old_name.data).lower()
+    cleaned_db_name = func.lower(func.replace(CarTransmission.name, " ", ""))
+
+    car_transmission_obj = CarTransmission.query.filter(
+        cleaned_db_name == cleaned_name.lower().replace(" ", ""),
+        CarTransmission.status != "Nonaktif"
+        ).first()
+    if car_transmission_obj and (cleaned_name == car_transmission_obj.name.lower().replace(" ", "") and cleaned_old_name != cleaned_name):
+      raise ValidationError("Tipe mobil telah terdaftar pada sistem.")
       
 
 
 class DivisionForm(FlaskForm):
-  code = StringField("Nama Seksi (Kode)", validators=[DataRequired(), Length(min=4, max=50, message="Kolom harus diisi 4 hingga 50 karakter.")])
-  name = StringField("Nama Seksi (Resmi)", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  code = StringField("Nama Seksi (Kode)", validators=[DataRequired(), Length(min=1, max=50, message="Kolom harus diisi 4 hingga 50 karakter.")])
+  name = StringField("Nama Seksi (Resmi)", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
   submit = SubmitField("Tambahkan Data")
+
+  def validate_name(self, name):
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_name = re.sub(r"\s+", "", self.name.data).lower()
+
+    cleaned_db_name = func.lower(func.replace(Division.name, " ", ""))
+    division_obj = Division.query.filter(
+          cleaned_db_name == cleaned_name.lower().replace(" ", ""),
+          Division.status != "Nonaktif"
+        ).first()
+    if division_obj:
+      raise ValidationError("Nama seksi telah terdaftar pada sistem.")
+    
+  def validate_code(self, code):
+    if len(code.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_code = re.sub(r"\s+", "", self.code.data).lower()
+    
+    cleaned_db_code = func.lower(func.replace(Division.code, " ", ""))
+    division_obj = Division.query.filter(
+          cleaned_db_code == cleaned_code.lower().replace(" ", ""),
+          Division.status != "Nonaktif"
+        ).first()
+    if division_obj:
+      raise ValidationError("Nama seksi telah terdaftar pada sistem.")
+
+
 
 
 class DivisionEditForm(FlaskForm):
   old_code = HiddenField()
   old_name = HiddenField()
-  code = StringField("Nama Seksi (Kode)", validators=[DataRequired(), Length(min=4, max=50, message="Kolom harus diisi 4 hingga 50 karakter.")])
-  name = StringField("Nama Seksi (Resmi)", validators=[DataRequired(), Length(min=4, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  code = StringField("Nama Seksi (Kode)", validators=[DataRequired(), Length(min=1, max=50, message="Kolom harus diisi 4 hingga 50 karakter.")])
+  name = StringField("Nama Seksi (Resmi)", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
   submit = SubmitField("Edit Data")
 
 
   def validate_code(self, code):
-    division_obj = Division.query.filter(Division.code==code.data, Division.status != "Nonaktif").first()
-    if division_obj and division_obj.code != self.old_code.data:
+    if len(code.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+
+    cleaned_code = re.sub(r"\s+", "", self.code.data).lower()
+    cleaned_old_code = re.sub(r"\s+", "", self.old_code.data).lower()
+    cleaned_db_code = func.lower(func.replace(Division.code, " ", ""))
+
+    division_obj = Division.query.filter(
+        cleaned_db_code == cleaned_code.lower().replace(" ", ""),
+        Division.status != "Nonaktif"
+        ).first()
+    if division_obj and (cleaned_code == division_obj.code.lower().replace(" ", "") and cleaned_old_code != cleaned_code):
+      print(cleaned_code, cleaned_old_code, division_obj.code.lower().replace(" ", ""))
       raise ValidationError("Kode seksi telah terdaftar pada sistem.")
 
-
   def validate_name(self, name):
-    division_obj = Division.query.filter(Division.name==name.data, Division.status != "Nonaktif").first()
+    if len(name.data) < 4:
+      raise ValidationError("Kolom ini diisi minimal 4 karakter.")
+    
+    cleaned_name = re.sub(r"\s+", "", self.name.data).lower()
+    cleaned_old_name = re.sub(r"\s+", "", self.old_name.data).lower()
+    cleaned_db_name = func.lower(func.replace(Division.name, " ", ""))
 
-    if division_obj:
-      cleaned_old_name = re.sub(r"\s+", "", self.old_name.data)
-      cleaned_name = re.sub(r"\s+", "", division_obj.name)
-
-      if division_obj and cleaned_name != cleaned_old_name:
-        raise ValidationError("Nama seksi telah terdaftar pada sistem.")
+    division_obj = Division.query.filter(
+        cleaned_db_name == cleaned_name.lower().replace(" ", ""),
+        Division.status != "Nonaktif"
+        ).first()
+    if division_obj and (cleaned_name == division_obj.name.lower().replace(" ", "") and cleaned_old_name != cleaned_name):
+      print(cleaned_name, cleaned_old_name, division_obj.name.lower().replace(" ", ""))
+      raise ValidationError("Kode seksi telah terdaftar pada sistem.")
     

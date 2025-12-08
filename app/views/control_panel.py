@@ -12,25 +12,22 @@ from ..forms import RegisterForm, LoginForm, UserEditForm, UserEditPasswordForm
 from ..utils import send_password_reset, check_admin
 
 
-@control_panel_app.route("/daftar", methods=["GET", "POST"])
+@control_panel_app.route("/pengguna/tambah", methods=["GET", "POST"])
 def register():
   # if current_user.is_authenticated:
   #   return redirect(url_for("public_app.homepage"))
 
   form = RegisterForm()
 
-  print(form.nip.data, form.name.data, form.division.data, form.password.data)
-
   if form.validate_on_submit():
     hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-
-    new_user = User(nip=form.nip.data, name=form.name.data, status="Active", division=form.division.data, password=hashed_password)
+    new_user = User(nip=form.nip.data, name=form.name.data, status="Aktif", division_id=int(form.division_id.data.id), role="Pegawai", password=hashed_password)
 
     db.session.add(new_user)
     db.session.commit()
 
     flash(f"Akun baru dengan NIP {form.nip.data} telah berhasil dibuat.", "success")
-    return redirect(url_for("control_panel_app.register"))
+    return redirect(url_for("control_panel_app.user"))
   else:
     print(form.nip.data, form.name.data)
 
