@@ -40,18 +40,18 @@
                                         <form enctype="multipart/form-data" method="POST">
                                           {{ form.hidden_tag() }}
                                             <div class="row mb-4">
-                                                {{ form.name.label(class="col-sm-3 col-form-label") }}
+                                                {{ form.model_id.label(class="col-sm-3 col-form-label") }}
                                                 
                                                 <div class="col-sm-9">
-                                                    {% if form.name.errors %}
-                                                        {{ form.name(class="form-control is-invalid") }} 
+                                                    {% if form.model_id.errors %}
+                                                        {{ form.model_id(class="form-select is-invalid") }}
                                                         <div class="invalid-feedback">
-                                                            {% for error in form.name.errors %}
+                                                            {% for error in form.model_id.errors %}
                                                             <span>{{ error }}</span>
                                                             {% endfor %}
                                                         </div>
                                                     {% else %}
-                                                        {{ form.name(class="form-control") }} 
+                                                        {{ form.model_id(class="form-select") }} 
                                                     {% endif %}
                                                 </div>
                                             </div>

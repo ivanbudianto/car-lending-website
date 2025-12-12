@@ -4,7 +4,7 @@
         <link href="{{ url_for('static', filename='libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 {% endblock %} -->
 
-{% extends 'components/public/base.html' %} {% set active_page = 'car' %}
+{% extends 'components/public/base.html' %} {% set active_page = 'car_model' %}
 {% block content %}
 
 <!-- ============================================================== -->
@@ -19,7 +19,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0 font-size-18">Form Daftar Mobil</h4>
+                                    <h4 class="mb-sm-0 font-size-18">Daftar Jenis Mobil</h4>
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
@@ -46,7 +46,7 @@
                                             provides the based framework upon which plug-ins can built.
                                         </p>
 
-                                        <a href="/layanan/mobil/tambah"><button type="button" 
+                                        <a href="/layanan/jenis-mobil/tambah"><button type="button" 
                                         <button type="button" class="btn btn-success waves-effect waves-light mb-3 w-lg" id="sa-danger">
                                                         <i class="bx bx-plus font-size-16 align-middle me-2"></i> Tambah
                                                     </button>
@@ -57,10 +57,7 @@
                                             
                                             <thead>
                                             <tr>
-                                                <th>Nama</th>
-                                                <th>Plat Nomor</th>
-                                                <th>Tipe Mobil</th>
-                                                <th>Status</th>
+                                                <th>Jenis Mobil</th>
                                                 <th>Tanggal Ditambahkan</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -70,21 +67,17 @@
                                             <tbody>
                                             {% for item in datas %}
                                             <tr>
-                                                <td>{{ item.model.name }}</td>
-                                                <td>{{ item.license_plate }}</td>
-                                                <td>{{ item.transmission.name }}</td>
-                                                <td>{{ item.status }}</td>
+                                                <td>{{ item.name }}</td>
                                                 <td>{{ item._inserted_date.strftime('%d/%m/%Y, %H:%M:%S') }}</td>
                                                 <td>
-                                                    <a href="/layanan/mobil/edit/{{ item.id }}" class="btn-edit">
+                                                    <a href="/layanan/jenis-mobil/edit/{{ item.id }}" class="btn-edit">
                                                         <button type="button" class="btn btn-warning waves-effect waves-light">
                                                             <i class="bx bxs-pencil font-size-16 align-middle me-2"></i> Edit
                                                         </button>
                                                     </a>
-                                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-delete" data-id="{{ item.id }}" data-detail="{{ item.license_plate }}" id="sa-danger">
+                                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-delete" data-id="{{ item.id }}" data-detail="{{ item.name }}" id="sa-danger">
                                                         <i class="bx bxs-trash font-size-16 align-middle me-2"></i> Hapus
                                                     </button>
-
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -138,7 +131,7 @@
 
                     Swal.fire({
                         title: 'Apakah anda yakin?',
-                        text: `Mobil dengan plat ${rowDetail} akan terhapus. `,
+                        text: `Data jenis mobil ${rowDetail} akan terhapus. `,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',
@@ -149,7 +142,7 @@
                         if (result.isConfirmed) {
 
                             // Example: DELETE with fetch
-                            window.location.href = `/layanan/mobil/hapus/${rowId}`;
+                            window.location.href = `/layanan/jenis-mobil/hapus/${rowId}`;
                         }
                     });
                 });

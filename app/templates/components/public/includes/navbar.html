@@ -206,6 +206,13 @@
                                 </a>
                             </li>
 
+                            <li class= "{{ 'mm-active' if active_page=='car_model' else ''  }}">
+                                <a href="{{ url_for('public_app.car_model', id=current_user.id) }}" class="waves-effect">
+                                    <i class="bx bx-grid-alt"></i>
+                                    <span key="t-car">Kelola Jenis Mobil</span>
+                                </a>
+                            </li>
+
                             <li class= "{{ 'mm-active' if active_page=='car_transmission' else ''  }}">
                                 <a href="{{ url_for('public_app.car_transmission', id=current_user.id) }}" class="waves-effect">
                                     <i class="bx bx-map-pin"></i>

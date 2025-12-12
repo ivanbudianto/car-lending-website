@@ -13,7 +13,9 @@ from ..utils import send_password_reset, check_admin
 
 
 @control_panel_app.route("/pengguna/tambah", methods=["GET", "POST"])
+@login_required
 def register():
+  check_admin()
   # if current_user.is_authenticated:
   #   return redirect(url_for("public_app.homepage"))
 
@@ -51,6 +53,23 @@ def login():
       flash("Anda gagal masuk. Periksa kembali kombinasi NIP dan password Anda.", "error")
 
   return render_template("control_panel/auth/login.html", title="Masuk - Development", form=form)
+
+
+@control_panel_app.route("/pengguna/hapus/<id>", methods=["GET", "POST"])
+@login_required
+def delete_user(id):
+  check_admin()
+  
+  if id == 1:
+    flash("Super Admin tidak dapat dihapus.", "error")
+    return redirect(url_for("control_panel_app.pengguna"))
+  
+  data = User.query.filter_by(id=id).first_or_404()
+  data.status = "Nonaktif"
+  db.session.commit()
+
+  flash("Data telah berhasil dihapus!", "success")
+  return redirect(url_for("control_panel_app.pengguna"))
 
 
 @control_panel_app.route("/lupa-password/<token>", methods=["GET", "POST"])

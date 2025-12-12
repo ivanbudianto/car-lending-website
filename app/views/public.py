@@ -9,8 +9,8 @@ import datetime
 # local imports
 from . import public_app
 from .. import db
-from ..models import Car, CarTransmission, Division
-from ..forms import CarForm, CarEditForm, DivisionForm, DivisionEditForm, CarTransmissionForm, CarTransmissionEditForm
+from ..models import Car, CarTransmission, CarModel, Division
+from ..forms import CarForm, CarEditForm, DivisionForm, DivisionEditForm, CarTransmissionForm, CarTransmissionEditForm, CarModelForm, CarModelEditForm
 from ..utils import check_admin, save_resized_image, process_input_list_based_on_weight
 
 
@@ -42,7 +42,8 @@ def car():
   datas = Car.query.filter(Car.status != 'Nonaktif').order_by(Car._updated_date.desc())
   # Use .options(joinedload(...)) to fetch the related transmission_type data
   datas = Car.query \
-    .options(joinedload(Car.transmission_type)) \
+    .options(joinedload(Car.transmission)) \
+    .options(joinedload(Car.model)) \
     .filter(Car.status != 'Nonaktif') \
     .order_by(Car._updated_date.desc())
     
@@ -57,10 +58,10 @@ def create_car():
   if form.validate_on_submit():
     if form.image.data:
       image = save_resized_image(form.image.data, 1280, 720, "tour_list")
-      new_car = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Tersedia", image=image, _updated_by=current_user.id)
+      new_car = Car(model_id=int(form.model_id.data.id), license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Aktif", image=image, _updated_by=current_user.id)
       # new_tour_list = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=form.transmission_id.data, image=image, user=current_user)
     else:
-      new_car = Car(name=form.name.data, license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Tersedia", _updated_by=current_user.id)
+      new_car = Car(model_id=int(form.model_id.data.id), license_plate=form.license_plate.data, transmission_id=int(form.transmission_id.data.id), status="Aktif", _updated_by=current_user.id)
 
 
     db.session.add(new_car)
@@ -90,7 +91,7 @@ def edit_car(id):
       image = save_resized_image(form.image.data, 1280, 720, "tour_list")
       data.image = image
 
-    data.name = data.name if form.name.data is None else form.name.data
+    data.model_id = data.model_id if form.model_id.data.id is None else form.model_id.data.id
     data.license_plate = data.license_plate if form.license_plate.data is None else form.license_plate.data
     data.transmission_id = data.transmission_id if form.transmission_id.data.id is None else form.transmission_id.data.id
     data.status = data.status if form.status_label.data is None else form.status_label.data
@@ -103,12 +104,11 @@ def edit_car(id):
     return redirect(url_for("public_app.car"))
   
   elif request.method == "GET":
-    form.name.data = data.name
+    form.model_id.data = CarModel.query.filter_by(id=data.model_id).first_or_404()
     form.license_plate.data = data.license_plate
     form.transmission_id.data = CarTransmission.query.filter_by(id=data.transmission_id).first_or_404()
     form.status_label.data = data.status
     form.old_license_plate.data = data.license_plate
-
 
   return render_template("public/services/car/car_edit-form.html", title="Edit Daftar Wisata - Bondowoso Tourism", form=form, operation="Edit")
 
@@ -256,3 +256,65 @@ def delete_car_transmission(id):
 
   flash("Data telah berhasil dihapus!", "success")
   return redirect(url_for("public_app.car_transmission"))
+
+
+
+# Car Types Routes
+
+@public_app.route("/layanan/jenis-mobil", methods=["GET", "POST"])
+@login_required
+def car_model():
+  datas = CarModel.query.filter(CarModel.status != 'Nonaktif').order_by(CarModel.id.asc())
+  return render_template("public/services/car_model/car-model.html", title="Daftar Wisata - Bondowoso Tourism", datas=datas)
+
+
+@public_app.route("/layanan/jenis-mobil/tambah", methods=["GET", "POST"])
+@login_required
+def create_car_model():
+  check_admin()
+
+  form = CarModelForm()
+  if form.validate_on_submit():
+    new_car_model = CarModel(name=form.name.data, status="Aktif", _updated_by=current_user.id)
+
+    db.session.add(new_car_model)
+    db.session.commit()
+
+    flash("Data telah berhasil ditambahkan!", "success")
+    return redirect(url_for("public_app.car_model"))
+
+  return render_template("public/services/car_model/car-model_form.html", title="Tambah Daftar Wisata - Bondowoso Tourism", form=form, operation="Tambah")
+
+@public_app.route("/layanan/jenis-mobil/edit/<id>", methods=["GET", "POST"])
+@login_required
+def edit_car_model(id):
+  check_admin()
+  data = CarModel.query.filter_by(id=id).first_or_404()
+  form = CarModelEditForm()
+
+  if form.validate_on_submit():
+    data.name = data.name if form.name.data is None else form.name.data
+
+    data._inserted_date = data._inserted_date
+    data._updated_date = datetime.datetime.now()
+    db.session.commit()
+
+    flash("Data telah berhasil diedit!", "success")
+    return redirect(url_for("public_app.car_model"))
+  
+  elif request.method == "GET":
+    form.name.data = data.name
+    form.old_name.data = data.name
+
+  return render_template("public/services/car_model/car-model_edit-form.html", title="Edit Daftar Wisata - Bondowoso Tourism", form=form, operation="Edit")
+
+@public_app.route("/layanan/jenis-mobil/hapus/<id>", methods=["GET", "POST"])
+@login_required
+def delete_car_model(id):
+  check_admin()
+  data = CarModel.query.filter_by(id=id).first_or_404()
+  data.status = "Nonaktif"
+  db.session.commit()
+
+  flash("Data telah berhasil dihapus!", "success")
+  return redirect(url_for("public_app.car_model"))
