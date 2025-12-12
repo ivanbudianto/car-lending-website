@@ -73,6 +73,8 @@ class Car(db.Model):
   _updated_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
   _updated_by = db.Column(db.Integer, nullable=False, default=999)
 
+  car_maintenances = db.relationship('CarMaintenance', backref='car', lazy=True)
+
   # transmission = db.relationship("CarTransmission", back_populates="car_transmission")
   # distances = db.relationship("TourDistance", backref="tour_list", lazy=True) # relationship to distances
 
@@ -121,13 +123,15 @@ class CarMaintenance(db.Model):
   __tablename__ = "car_maintenances"
 
   id = db.Column(db.Integer, primary_key=True)
-  car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
+  car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
   start_date = db.Column(db.DateTime, nullable=False)
   end_date = db.Column(db.DateTime, nullable=False)
   status = db.Column(db.String(30), nullable=False)
   _inserted_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
   _updated_date = db.Column(db.DateTime, nullable=False, default=datetime.now)
   _updated_by = db.Column(db.Integer, nullable=False, default=999)
+
+  car_maintenances = db.relationship('Car', backref='maintenances', lazy=True)
 
   # transmission = db.relationship("CarTransmission", back_populates="car_transmission")
   # distances = db.relationship("TourDistance", backref="tour_list", lazy=True) # relationship to distances

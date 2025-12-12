@@ -4,7 +4,7 @@
         <link href="{{ url_for('static', filename='libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 {% endblock %} -->
 
-{% extends 'components/public/base.html' %} {% set active_page = 'car_model' %}
+{% extends 'components/public/base.html' %} {% set active_page = 'car_maintenance' %}
 {% block content %}
 
 <!-- ============================================================== -->
@@ -19,7 +19,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-sm-0 font-size-18">Daftar Jenis Mobil</h4>
+                                    <h4 class="mb-sm-0 font-size-18">Daftar Maintenance Mobil</h4>
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
@@ -46,7 +46,7 @@
                                             provides the based framework upon which plug-ins can built.
                                         </p>
 
-                                        <a href="/layanan/jenis-mobil/tambah"><button type="button" 
+                                        <a href="/layanan/maintenance-mobil/tambah"><button type="button" 
                                         <button type="button" class="btn btn-success waves-effect waves-light mb-3 w-lg" id="sa-danger">
                                                         <i class="bx bx-plus font-size-16 align-middle me-2"></i> Tambah
                                                     </button>
@@ -57,7 +57,9 @@
                                             
                                             <thead>
                                             <tr>
-                                                <th>Jenis Mobil</th>
+                                                <th>Mobil</th>
+                                                <th>Tanggal Mulai</th>
+                                                <th>Tanggal Selesai</th>
                                                 <th>Tanggal Ditambahkan</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -67,10 +69,12 @@
                                             <tbody>
                                             {% for item in datas %}
                                             <tr>
-                                                <td>{{ item.name }}</td>
+                                                <td>{{ item.car.model.name }} ({{ item.car.transmission.name }}) - {{ item.car.license_plate }}</td>
+                                                <td>{{ item.start_date.strftime('%d/%m/%Y') }}</td>
+                                                <td>{{ item.end_date.strftime('%d/%m/%Y') }}</td>
                                                 <td>{{ item._inserted_date.strftime('%d/%m/%Y, %H:%M:%S') }}</td>
                                                 <td>
-                                                    <a href="/layanan/jenis-mobil/edit/{{ item.id }}" class="btn-edit">
+                                                    <a href="/layanan/maintenance-mobil/edit/{{ item.id }}" class="btn-edit">
                                                         <button type="button" class="btn btn-warning waves-effect waves-light">
                                                             <i class="bx bxs-pencil font-size-16 align-middle me-2"></i> Edit
                                                         </button>

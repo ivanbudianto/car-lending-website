@@ -9,10 +9,20 @@ import datetime
 # local imports
 from . import public_app
 from .. import db
-from ..models import Car, CarTransmission, CarModel, Division
-from ..forms import CarForm, CarEditForm, DivisionForm, DivisionEditForm, CarTransmissionForm, CarTransmissionEditForm, CarModelForm, CarModelEditForm
+from ..models import Car, CarTransmission, CarModel, Division, CarMaintenance
+from ..forms import CarForm, CarEditForm, DivisionForm, DivisionEditForm, CarTransmissionForm, CarTransmissionEditForm, CarModelForm, CarModelEditForm, CarMaintenanceForm, CarMaintenanceEditForm
 from ..utils import check_admin, save_resized_image, process_input_list_based_on_weight
 
+
+def check_car_realtime_status(cars):
+  now = datetime.datetime.now()
+  for car in cars:
+      car.realtime_status = (
+          "Maintenance"
+          if any(maintenance.start_date <= now <= maintenance.end_date for maintenance in car.maintenances)
+          else car.status
+      )
+  return cars
 
 # Homepage routes
 
@@ -39,14 +49,17 @@ def services():
 @public_app.route("/layanan/mobil", methods=["GET", "POST"])
 @login_required
 def car():
-  datas = Car.query.filter(Car.status != 'Nonaktif').order_by(Car._updated_date.desc())
-  # Use .options(joinedload(...)) to fetch the related transmission_type data
+
   datas = Car.query \
     .options(joinedload(Car.transmission)) \
     .options(joinedload(Car.model)) \
+    .options(joinedload(Car.maintenances)) \
     .filter(Car.status != 'Nonaktif') \
-    .order_by(Car._updated_date.desc())
-    
+    .order_by(Car._updated_date.desc()) \
+    .all()
+  
+  
+  datas = check_car_realtime_status(datas)  
   return render_template("public/services/car/car.html", title="Daftar Wisata - Bondowoso Tourism", datas=datas)
 
 @public_app.route("/layanan/mobil/tambah", methods=["GET", "POST"])
@@ -318,3 +331,83 @@ def delete_car_model(id):
 
   flash("Data telah berhasil dihapus!", "success")
   return redirect(url_for("public_app.car_model"))
+
+
+@public_app.route("/layanan/maintenance-mobil", methods=["GET", "POST"])
+@login_required
+def car_maintenance():
+  check_admin()
+
+  datas = (
+    CarMaintenance.query
+        .options(
+            joinedload(CarMaintenance.car).joinedload(Car.transmission),
+            joinedload(CarMaintenance.car).joinedload(Car.model),
+        )
+        .join(CarMaintenance.car)
+        .filter(Car.status != 'Nonaktif')
+        .order_by(Car._updated_date.desc())
+    )
+  
+  return render_template("public/services/car_maintenance/car-maintenance.html", title="Daftar Wisata - Bondowoso Tourism", datas=datas)
+
+@public_app.route("/layanan/maintenance-mobil/tambah", methods=["GET", "POST"])
+@login_required
+def create_car_maintenance():
+  check_admin()
+
+  form = CarMaintenanceForm()
+
+  cars = Car.query \
+    .options(joinedload(Car.transmission)) \
+    .options(joinedload(Car.model)) \
+    .filter(Car.status != 'Nonaktif') \
+    .order_by(Car._updated_date.desc())
+  form.set_car_choices(cars)
+
+
+  if form.validate_on_submit():
+    new_car_maintenance = CarMaintenance(car_id=int(form.car.data), start_date=form.start_date.data, end_date=form.end_date.data, status="Aktif", _updated_by=current_user.id)
+
+    db.session.add(new_car_maintenance)
+    db.session.commit()
+
+    flash("Data telah berhasil ditambahkan!", "success")
+    return redirect(url_for("public_app.car"))
+
+  return render_template("public/services/car_maintenance/car-maintenance_form.html", title="Tambah Daftar Wisata - Bondowoso Tourism", form=form, operation="Tambah")
+
+
+@public_app.route("/layanan/maintenance-mobil/edit/<id>", methods=["GET", "POST"])
+@login_required
+def edit_car_maintenance(id):
+  check_admin()
+  data = CarMaintenance.query.filter_by(id=id).first_or_404()
+  form = CarMaintenanceEditForm()
+
+  cars = Car.query \
+    .options(joinedload(Car.transmission)) \
+    .options(joinedload(Car.model)) \
+    .filter(Car.status != 'Nonaktif') \
+    .order_by(Car._updated_date.desc()) \
+    .all()
+  form.set_car_choices(cars)
+
+  if form.validate_on_submit():
+
+    data.car_id = data.car_id if form.car.data is None else form.car.data
+    data.start_date = data.start_date if form.start_date.data is None else form.start_date.data
+    data.end_date = data.end_date if form.end_date.data is None else form.end_date.data
+    db.session.commit()
+
+    flash("Data telah berhasil diedit!", "success")
+    return redirect(url_for("public_app.car_maintenance"))
+  
+  elif request.method == "GET":
+    form.car.data = data.car_id
+    form.start_date.data = data.start_date
+    form.end_date.data = data.end_date
+
+  return render_template("public/services/car_maintenance/car-maintenance_edit-form.html", title="Tambah Daftar Wisata - Bondowoso Tourism", form=form, operation="Edit")
+
+

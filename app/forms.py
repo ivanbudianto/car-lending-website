@@ -2,17 +2,25 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_ckeditor import CKEditorField
-from wtforms import StringField, SelectField, EmailField, PasswordField, IntegerField, FloatField, TextAreaField, FieldList, FormField, SubmitField, HiddenField
+from wtforms import StringField, SelectField, EmailField, PasswordField, IntegerField, FloatField, TextAreaField, FieldList, FormField, SubmitField, HiddenField, DateField
 from wtforms.validators import DataRequired, InputRequired, Email, Length, EqualTo, ValidationError
 from wtforms_sqlalchemy.fields import QuerySelectField, QueryRadioField
 from flask_login import current_user
 import re
 from sqlalchemy import func, or_
+from datetime import date, timedelta
 
 # local imports
 from .models import User
 from .models import Car, CarTransmission, CarModel, Division
 from . import bcrypt
+
+
+def get_week_range():
+    today = date.today()
+    start = today - timedelta(days=today.weekday())        # Monday
+    end = start + timedelta(days=6)                        # Sunday
+    return start, end
 
 
 class RegisterForm(FlaskForm):
@@ -333,36 +341,67 @@ class DivisionEditForm(FlaskForm):
       raise ValidationError("Kode seksi telah terdaftar pada sistem.")
     
 
-class CarForm(FlaskForm):
-  model_id = QuerySelectField("Jenis Mobil", validators=[DataRequired()], query_factory=lambda: CarModel.query.filter(CarModel.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Jenis Mobil")
-  license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
-  transmission_id = QuerySelectField("Tipe Mobil", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.filter(CarTransmission.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Tipe Mobil")
+class CarMaintenanceForm(FlaskForm):
+  # start, end = get_week_range()
 
-  image = FileField("Gambar", validators=[FileAllowed(["jpg", "jpeg", "png"], message="File yang Anda unggah tidak diperbolehkan. Silakan unggah file dalam format .jpg, .jpeg, atau .png.")])
+  car = SelectField("Mobil", coerce=int)
+  # model_id = QuerySelectField("Jenis Mobil", validators=[DataRequired()], query_factory=lambda: Car.query.filter(Car.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Mobil")
+  # license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  # transmission_id = QuerySelectField("Tipe Mobil", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.filter(CarTransmission.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Tipe Mobil")
+
+  start_date = DateField(
+        "Tanggal Mulai",
+        format="%Y-%m-%d"
+        # render_kw={
+        #     "min": start.strftime("%Y-%m-%d"),
+        #     "max": end.strftime("%Y-%m-%d"),
+        # }
+    )
+  
+  end_date = DateField(
+        "Tanggal Berakhir",
+        format="%Y-%m-%d"
+        # render_kw={
+        #     "min": start.strftime("%Y-%m-%d"),
+        #     "max": end.strftime("%Y-%m-%d"),
+        # }
+    )
+
+  # image = FileField("Gambar", validators=[FileAllowed(["jpg", "jpeg", "png"], message="File yang Anda unggah tidak diperbolehkan. Silakan unggah file dalam format .jpg, .jpeg, atau .png.")])
   submit = SubmitField("Daftar")
 
-  # def validate_name(self, name):
-  #   if len(name.data) < 4:
-  #     raise ValidationError("Kolom ini diisi minimal 4 karakter.")
-    
-    # cleaned_name = re.sub(r"\s+", "", self.name.data).lower()
-    
-    # cleaned_db_name = func.lower(func.replace(Car.name, " ", ""))
-    # car_obj = Car.query.filter(
-    #       cleaned_db_name == cleaned_name.lower().replace(" ", ""),
-    #       Car.status != "Nonaktif"
-    #     ).first()
-    # if car_obj:
-    #   raise ValidationError("Plat nomor ini telah terdaftar pada sistem.")
+  def set_car_choices(self, cars):
+    self.car.choices = [(car.id, f"{car.model.name} ({car.transmission.name}) - {car.license_plate}") for car in cars]
 
+class CarMaintenanceEditForm(FlaskForm):
+  # start, end = get_week_range()
 
-start, end = get_week_range()
+  car = SelectField("Mobil", coerce=int)
+  # model_id = QuerySelectField("Jenis Mobil", validators=[DataRequired()], query_factory=lambda: Car.query.filter(Car.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Mobil")
+  # license_plate = StringField("Plat Nomor", validators=[DataRequired(), Length(min=1, max=100, message="Kolom harus diisi 4 hingga 100 karakter.")])
+  # transmission_id = QuerySelectField("Tipe Mobil", validators=[DataRequired()], query_factory=lambda: CarTransmission.query.filter(CarTransmission.status!='Nonaktif'), get_label="name", allow_blank=True, blank_text="Pilih Tipe Mobil")
 
-    date = DateField(
-        "Date",
-        format="%Y-%m-%d",
-        render_kw={
-            "min": start.strftime("%Y-%m-%d"),
-            "max": end.strftime("%Y-%m-%d"),
-        }
+  start_date = DateField(
+        "Tanggal Mulai",
+        format="%Y-%m-%d"
+        # render_kw={
+        #     "min": start.strftime("%Y-%m-%d"),
+        #     "max": end.strftime("%Y-%m-%d"),
+        # }
     )
+  
+  end_date = DateField(
+        "Tanggal Berakhir",
+        format="%Y-%m-%d"
+        # render_kw={
+        #     "min": start.strftime("%Y-%m-%d"),
+        #     "max": end.strftime("%Y-%m-%d"),
+        # }
+    )
+
+  # image = FileField("Gambar", validators=[FileAllowed(["jpg", "jpeg", "png"], message="File yang Anda unggah tidak diperbolehkan. Silakan unggah file dalam format .jpg, .jpeg, atau .png.")])
+  submit = SubmitField("Daftar")
+
+  def set_car_choices(self, cars):
+    self.car.choices = [(car.id, f"{car.model.name} ({car.transmission.name}) - {car.license_plate}") for car in cars]
+

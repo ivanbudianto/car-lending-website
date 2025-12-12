@@ -60,7 +60,7 @@
                                                 <th>Nama</th>
                                                 <th>Plat Nomor</th>
                                                 <th>Tipe Mobil</th>
-                                                <th>Status</th>
+                                                <th>Status Terkini</th>
                                                 <th>Tanggal Ditambahkan</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -73,7 +73,7 @@
                                                 <td>{{ item.model.name }}</td>
                                                 <td>{{ item.license_plate }}</td>
                                                 <td>{{ item.transmission.name }}</td>
-                                                <td>{{ item.status }}</td>
+                                                <td>{{ item.realtime_status }}</td>
                                                 <td>{{ item._inserted_date.strftime('%d/%m/%Y, %H:%M:%S') }}</td>
                                                 <td>
                                                     <a href="/layanan/mobil/edit/{{ item.id }}" class="btn-edit">
